@@ -105,7 +105,8 @@
 #' A [CohortMethodData] object.
 #'
 #' @export
-getDbCohortMethodData <- function(connectionDetails,
+getDbCohortMethodData <- function(connection = NULL,
+                                  connectionDetails,
                                   cdmDatabaseSchema,
                                   oracleTempSchema = NULL,
                                   tempEmulationSchema = getOption("sqlRenderTempEmulationSchema"),
@@ -155,9 +156,11 @@ getDbCohortMethodData <- function(connectionDetails,
     stop("removeDuplicateSubjects should have value \"keep all\", \"keep first\", or \"remove all\".")
   ParallelLogger::logTrace("Getting cohort method data for target ID ", targetId, " and comparator ID ", comparatorId)
 
+  if(is.null(connection)){
   connection <- DatabaseConnector::connect(connectionDetails)
   on.exit(DatabaseConnector::disconnect(connection))
-
+}
+  
   if (excludeDrugsFromCovariates) {
     if (exposureTable != "drug_era")
       warning("Removing drugs from covariates, but not sure if exposure IDs are valid drug concepts")
