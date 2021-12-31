@@ -146,10 +146,10 @@ FROM (
 	} : {
 		{@remove_duplicate_subjects == 'remove all'} ? {
 			INNER JOIN
-			(SELECT subject_id, COUNT(DISTINCT(cohort_definition_id)) cohort_count
-			 FROM @exposure_database_schema.@exposure_table
-			 WHERE cohort_definition_id IN (@target_id, @comparator_id)
-		 	 GROUP BY subject_id) temp
+			(SELECT subject_id, COUNT(*) AS cohort_count
+			                    FROM (SELECT * FROM @exposure_database_schema.@exposure_table) q01
+			                    WHERE (cohort_definition_id IN (@target_id, @comparator_id))
+			                    GROUP BY subject_id) temp
 			ON
 				exposure_table.subject_id = temp.subject_id
 			WHERE
